@@ -11,6 +11,11 @@ so there's no possible way to, say, read from an input pin accidentally.
 
 It also uses C++ constructors to automatically set pin modes and things.
 
+## AudioMonitor
+
+This is a tiny project that, given 3 LEDs on pins 2, 4, and 7, and an
+analog mic on pin 0, will use the 3 LEDs as a volume meter.
+
 ## Clapper
 
 This is an implementation of the Clapper, a.k.a. a machine that
