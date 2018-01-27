@@ -1,3 +1,5 @@
+#include "ArduinoUtils.h"
+
 #define MIC_THRESHOLD 600
 
 class Clapper {

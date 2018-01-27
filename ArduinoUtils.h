@@ -149,10 +149,10 @@ DigitalOutputPin DigitalInputPin::toOutput() const {
 /// current values of a pin, and exposes no functionality for writing beyond
 /// enabling the internal pullup register.
 class AnalogInputPin {
-protected:
   const uint8_t pinNum;
-  AnalogInputPin(uint8_t pin): pinNum(pin) {}
 public:
+  AnalogInputPin(uint8_t pin): pinNum(pin) {}
+  
   /// Configures the reference voltage used for analog input (i.e. the value
   /// used as the top of the input range). The options are:
   /// - DEFAULT: the default analog reference of 5 volts (on 5V Arduino boards)
