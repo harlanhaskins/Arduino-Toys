@@ -1,6 +1,6 @@
 #include "ArduinoUtils.h"
 
-#define MIC_THRESHOLD 600
+#define MIC_THRESHOLD 1000
 
 class Clapper {
 private:
@@ -18,7 +18,7 @@ public:
     pin(pin), state(Idle), isOn(true), cooldownMillis(0) {}
 
   void setState(State state) {
-    cooldownMillis = millis() + 100;
+    cooldownMillis = millis() + 200;
     Serial.print("State is now: ");
     switch (state) {
     case Idle:
@@ -27,7 +27,7 @@ public:
       break;
     case OneClap:
       Serial.println("OneClap");
-      resetMillis = millis() + 500;
+      resetMillis = millis() + 750;
       break;
     }
     this->state = state;
@@ -45,17 +45,16 @@ public:
       setState(OneClap);
       break;
     case OneClap:
-      if (millis() <= resetMillis) {
-        if (micValue >= MIC_THRESHOLD) {
-          setState(Idle);
-          Serial.println("Setting LED pin!");
-          delay(50);
-          pin.highIf(isOn);
-          isOn = !isOn;
-        }
-      } else {
+      if (millis() > resetMillis) {
         setState(Idle);
+        return;
       }
+      if (micValue < MIC_THRESHOLD) return;
+      setState(Idle);
+      Serial.println("Setting LED pin!");
+      delay(50);
+      pin.highIf(isOn);
+      isOn = !isOn;
       break;
     }
   }
