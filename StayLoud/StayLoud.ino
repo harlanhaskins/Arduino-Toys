@@ -1,5 +1,3 @@
-#define MIC_THRESHOLD 600
-
 AnalogInputPin mic(0);
 DigitalOutputPin buzzer(2);
 
