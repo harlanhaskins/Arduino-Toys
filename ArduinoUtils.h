@@ -118,19 +118,40 @@ public:
   void low() const {
     digitalWrite(pinNum, LOW);
   }
+
+  /// Writes an analog value (PWM wave) to a pin. Can be used to light a LED at
+  /// varying brightnesses or drive a motor at various speeds. After a call to
+  /// `writeAnalog()`, the pin will generate a steady square wave of the
+  /// specified duty cycle until the next call to `writeAnalog()` (or a read)
+  /// on the same pin. The frequency of the PWM signal on most pins is
+  /// approximately 490 Hz. On the Uno and similar boards, pins 5 and 6 have a
+  /// frequency of approximately 980 Hz.
+  ///
+  /// On most Arduino boards (those with the ATmega168 or ATmega328P), this
+  /// function works on pins 3, 5, 6, 9, 10, and 11. On the Arduino Mega, it
+  /// works on pins 2 - 13 and 44 - 46. Older Arduino boards with an ATmega8
+  /// only support analogWrite() on pins 9, 10, and 11.
+  /// The Arduino DUE supports analogWrite() on pins 2 through 13, plus pins
+  /// DAC0 and DAC1. Unlike the PWM pins, DAC0 and DAC1 are Digital to Analog
+  /// converters, and act as true analog outputs.
+  /// You do not need to call pinMode() to set the pin as an output before
+  /// calling `writeAnalog()`.
+  void writeAnalog(int value) const {
+    analogWrite(pinNum, value);
+  }
 };
 
 DigitalOutputPin DigitalInputPin::toOutput() const {
   return DigitalOutputPin(pinNum);
 }
 
-/// AnalogPin is a base class for analog I/O pins. On its own, it just
-/// declares the data layout -- it's up to subclasses to implement features
-/// that are specific to input or output.
-class AnalogPin {
+/// Represents a numbered analog pin along the Arduino. It allows for reading
+/// current values of a pin, and exposes no functionality for writing beyond
+/// enabling the internal pullup register.
+class AnalogInputPin {
 protected:
   const uint8_t pinNum;
-  AnalogPin(uint8_t pin): pinNum(pin) {}
+  AnalogInputPin(uint8_t pin): pinNum(pin) {}
 public:
   /// Configures the reference voltage used for analog input (i.e. the value
   /// used as the top of the input range). The options are:
@@ -146,45 +167,11 @@ public:
   static void setReferenceVoltageMode(uint8_t mode) {
     analogReference(mode);
   }
-};
 
-// Forward-declaration, for AnalogInputPin::toOutput();
-class AnalogOutputPin;
-
-/// Represents a numbered analog pin along the Arduino. It allows for reading
-/// current values of a pin, and exposes no functionality for writing beyond
-/// enabling the internal pullup register.
-///
-/// You can convert an Input pin to an Output pin by calling
-/// `DigitalInputPin::toOutput()`
-class AnalogInputPin : public AnalogPin {
-public:
-  AnalogInputPin(uint8_t pin): AnalogPin(pin) {}
-
+  /// Reads an analog value (0 to 1023) from the analog pin.
   int read() const {
     return analogRead(pinNum);
   }
-
-  AnalogOutputPin toOutput() const;
 };
-
-class AnalogOutputPin : public AnalogPin {
-public:
-  AnalogOutputPin(uint8_t pin): AnalogPin(pin) {}
-
-  void write(int value) const {
-    analogWrite(pinNum, value);
-  }
-
-  AnalogInputPin toInput() const {
-    AnalogInputPin in(pinNum);
-    return in;
-  }
-};
-
-AnalogOutputPin AnalogInputPin::toOutput() const {
-  AnalogOutputPin out(pinNum);
-  return out;
-}
 
 #endif // ARDUINO_UTILS_H
