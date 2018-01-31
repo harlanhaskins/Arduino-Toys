@@ -25,6 +25,11 @@ lights an LED after 2 claps.
 
 This is a dumb box that screams at you until you out-scream it.
 
+## Morse
+
+This is a small program that plays morse code audio of whatever string you
+want.
+
 # Author
 
 Harlan Haskins ([@harlanhaskins](https://github.com/harlanhaskins))

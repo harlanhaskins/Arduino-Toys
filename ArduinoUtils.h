@@ -119,6 +119,14 @@ public:
     digitalWrite(pinNum, LOW);
   }
 
+  void tone(unsigned int frequency, unsigned long duration = 0) const {
+    ::tone(pinNum, frequency, duration);
+  }
+
+  void stopTone() {
+    noTone(pinNum);
+  }
+
   /// Writes an analog value (PWM wave) to a pin. Can be used to light a LED at
   /// varying brightnesses or drive a motor at various speeds. After a call to
   /// `writeAnalog()`, the pin will generate a steady square wave of the
@@ -173,5 +181,11 @@ public:
     return analogRead(pinNum);
   }
 };
+
+template <typename T>
+Stream &operator<<(Stream &stream, T x) {
+  stream.print(x);
+  return stream;
+}
 
 #endif // ARDUINO_UTILS_H

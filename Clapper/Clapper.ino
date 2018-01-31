@@ -15,7 +15,7 @@ private:
   long resetMillis;
 public:
   Clapper(DigitalOutputPin &pin): 
-    pin(pin), state(Idle), isOn(true), cooldownMillis(0) {}
+    pin(pin), state(Idle), isOn(false), cooldownMillis(0) {}
 
   void setState(State state) {
     cooldownMillis = millis() + 200;
