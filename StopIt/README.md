@@ -40,4 +40,4 @@ Compile and run the code, available
 
 The board should look something like this:
 
-<img src='pcomp.harlanhaskins.com/assets/img/stopit-board.png'/>
+<img src='https://pcomp.harlanhaskins.com/assets/images/stopit-board.jpg'/>
