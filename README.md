@@ -30,6 +30,10 @@ This is a dumb box that screams at you until you out-scream it.
 This is a small program that plays morse code audio of whatever string you
 want.
 
+## StopIt
+
+This is a rigged arcade game similar to Wheel of Fortune.
+
 # Author
 
 Harlan Haskins ([@harlanhaskins](https://github.com/harlanhaskins))

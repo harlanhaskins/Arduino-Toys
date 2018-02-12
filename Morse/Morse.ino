@@ -61,6 +61,6 @@ void setup() {
 }
 
 void loop() {
-  displayMorse("Hello World");
+  displayMorse("Dinner");
   delay(2000);
 }
