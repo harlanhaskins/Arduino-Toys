@@ -183,6 +183,12 @@ public:
   }
 };
 
+template <typename T>
+Stream &operator<<(Stream &stream, T x) {
+  stream.print(x);
+  return stream;
+}
+
 /// ShiftRegister encapsulates the data and clock pins for an 8-bit shift
 /// register.
 class ShiftRegister {
@@ -232,11 +238,5 @@ public:
     write();
   }
 };
-
-template <typename T>
-Stream &operator<<(Stream &stream, T x) {
-  stream.print(x);
-  return stream;
-}
 
 #endif // ARDUINO_UTILS_H

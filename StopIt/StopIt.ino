@@ -21,6 +21,7 @@ void animateLEDMove(uint8_t from, uint8_t to) {
     from += from > to ? -1 : 1;
     leds.high(from);
     leds.write();
+    delay(timeout);
   }
 }
 
@@ -41,23 +42,27 @@ void win() {
 
 /// Always win! If you weren't on the winning LED, move the LED over to the
 /// winning one and then display the win message.
-bool riggedHandlePress(bool down, uint8_t led) {
+void rigToWin(uint8_t &led) {
   animateLEDMove(led, winningLED);
-  win();
-  return true;
+  led = winningLED;
 }
 
-/// Handles a press of a given LED. If the LED stops on the winning light,
-/// then 70% of the time move it up or down to a losing LED.
-void handlePress(bool down, uint8_t led) {
+/// If the LED stops on the winning light, then 70% of the time move it up or
+/// down to a losing LED.
+void rigToLose(bool down, uint8_t &led) {
+  if (led != winningLED) { return; }
+  if (random(10) > 7) { return; }
+
+  Serial << "Sorry bud, not your lucky day. Making you lose.\n";
+  auto newLED = led + (down ? -1 : 1);
+  animateLEDMove(led, newLED);
+  led = newLED;
+}
+
+/// Displays the win condition.
+void displayWin(uint8_t led) {
   if (led == winningLED) {
-    if (random(10) < 7) {
-      Serial << "Sorry bud, not your lucky day. Making you lose.\n";
-      animateLEDMove(led, led + (down ? -1 : 1));
-      lose();
-    } else {
-      win();
-    }
+    win();
   } else {
     lose();
   }
@@ -89,7 +94,7 @@ bool detectDoublePress() {
 void loop() {
   leds.clear();
   bool down = false;
-  int currentLED = 0;
+  uint8_t currentLED = 0;
 
   /// Forever, display LEDs one at a time from left-to-right and then from
   /// right-to-left. Each time a new LED is lit, in the timeout period while
@@ -104,12 +109,12 @@ void loop() {
       delay(1);
       if (button.isLow()) continue;
       if (isRigged) {
-        bool wasRigged = riggedHandlePress(down, currentLED);
-        detectDoublePress();
-        handlePress(down, wasRigged ? winningLED : currentLED);
-      } else if (!detectDoublePress()) {
-        handlePress(down, currentLED);
+        rigToWin(currentLED);
+      } else {
+        rigToLose(down, currentLED);
       }
+      detectDoublePress();
+      displayWin(currentLED);
       return;
     }
     leds.low(currentLED);
