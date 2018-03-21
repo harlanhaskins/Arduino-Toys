@@ -8,7 +8,7 @@ const char *morse[27] = {
   "...", "-", "..-", "...-", ".--", "-..-", "-.--", "--.."
 };
 
-const DigitalOutputPin speaker(3);
+const DigitalOutputPin led(2);
 
 const char *toMorse(char c) {
   int i = 0;
@@ -21,13 +21,17 @@ const char *toMorse(char c) {
 }
 
 void dot() {
-  speaker.tone(1000, 100);
+  led.high();
+  delay(150);
+  led.low();
   delay(150);
 }
 
 void dash() {
-  speaker.tone(1000, 300);
+  led.high();
   delay(450);
+  led.low();
+  delay(150);
 }
 
 void displayChar(char c) {
@@ -61,6 +65,6 @@ void setup() {
 }
 
 void loop() {
-  displayMorse("Dinner");
+  displayMorse("Hello world");
   delay(2000);
 }
