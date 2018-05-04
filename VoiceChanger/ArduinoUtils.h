@@ -183,7 +183,7 @@ public:
 };
 
 template <typename T>
-Stream &operator<<(Stream &stream, T x) {
+Stream &operator<<(Stream &stream, T &x) {
   stream.print(x);
   return stream;
 }

@@ -68,5 +68,6 @@ void setup() {
 }
 
 void loop() {
-  clapper.update(mic.read());
+  int val = mic.read();
+  clapper.update(val);
 }

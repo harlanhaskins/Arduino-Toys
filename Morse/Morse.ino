@@ -1,14 +1,16 @@
 #include "ArduinoUtils.h"
 
-char ascii[28] = " ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-char lowerAscii[28] = " abcdefghijklmnopqrstuvwxyz";
-const char *morse[27] = {
-  " ", ".-", "-...", "-.-.", "-..", ".", "..-.", "--.", "....", "..",
-  ".---", "-.-", ".-..", "--", "-.", "---", ".--.", "--.-", ".-.",
-  "...", "-", "..-", "...-", ".--", "-..-", "-.--", "--.."
+char *ascii = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+char *lowerAscii = "abcdefghijklmnopqrstuvwxyz";
+const char *morse[26] = {
+  ".-  ", "-...", "-.-.", "-.. ", ".   ", "..-.", "--. ", "....", "..  ",
+  ".---", "-.- ", ".-..", "--  ", "-.  ", "--- ", ".--.", "--.-", ".-. ",
+  "... ", "-   ", "..- ", "...-", ".-- ", "-..-", "-.--", "--.."
 };
 
 const DigitalOutputPin led(2);
+const DigitalOutputPin wordLED(3);
+const AnalogInputPin microphone(A0);
 
 const char *toMorse(char c) {
   int i = 0;
@@ -52,6 +54,8 @@ void displayChar(char c) {
   }
 }
 
+char buf[5] = {' ', ' ', ' ', ' ', '\0'};
+
 void displayMorse(const char *str) {
   const char *c = str;
   while (*c) {
@@ -61,10 +65,65 @@ void displayMorse(const char *str) {
   }
 }
 
+enum class ClapResult {
+  NoClaps,
+  OneClap,
+  TwoClaps
+};
+
+bool eq(char *c1, char *c2) {
+  return strcmp(c1, c2) == 0;
+}
+
+char readChar() {
+  for (int i = 0; i < 4; ++i) {
+    uint32_t cooldown = 0;
+    ClapResult result = ClapResult::NoClaps;
+    led.high();
+    if (i == 0) wordLED.high();
+    for (int n = 0; n < 1000; ++n) {
+      int micVal = microphone.read();
+      if (micVal > 600 && millis() > cooldown) {
+        switch (result) {
+        case ClapResult::NoClaps:
+          result = ClapResult::OneClap;
+          break;
+        case ClapResult::OneClap:
+          result = ClapResult::TwoClaps;
+          break;
+        case ClapResult::TwoClaps:
+          result = ClapResult::TwoClaps;
+          break;
+        }
+        cooldown = millis() + 250;
+      }
+      delay(1);
+    }
+    led.low();
+    if (i == 0) wordLED.low();
+    switch (result) {
+    case ClapResult::NoClaps:
+      buf[i] = ' ';
+      break;
+    case ClapResult::OneClap:
+      buf[i] = '.';
+      break;
+    case ClapResult::TwoClaps:
+      buf[i] = '-';
+      break;
+    }
+    delay(1000);
+  }
+  for (uint8_t codeIdx = 0; codeIdx < 26; ++codeIdx) {
+    char *code = morse[codeIdx];
+    if (eq(buf, code)) return lowerAscii[codeIdx];
+  }
+  return '\n';
+}
+
 void setup() {
 }
 
 void loop() {
-  displayMorse("Hello world");
-  delay(2000);
+  Serial << readChar();
 }
